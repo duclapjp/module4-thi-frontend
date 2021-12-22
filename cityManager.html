@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>List City</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function successHandler() {
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:8080/city',
+                success: function (data) {
+                    let content = `<h3>City List</h3> <input type="submit" value="Add">
+<table class="table" >
+        <tr>
+            <th>City</th>
+            <th>Country</th>
+        </tr>`;
+                    for (let i = 0; i < data.length; i++) {
+                        content += getCity(data[i]);
+                    }
+                    document.getElementById('cityList').innerHTML = content;
+                }
+            })
+        }
+        function getCity(city){
+            return `<tr>
+                        <td> <a href="${city.id}" onclick="showInfoCity(this)">${city.name}</a> </td>
+                        <td>${city.country.name}</td><br>
+                    </tr>
+                </table>`
+        }
+        function showInfoCity(a){
+            let idCity = a.getAttribute("href")
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:8080/city/' + idCity,
+                success: function (data){
+                    let content =` <h3>City ${data.name}</h3><br>
+                                    <p>Name: ${data.name}<br>
+                                    <p>Country: ${data.country.name}</p><br>
+                                    <p>Area: ${data.are}</p><br>
+                                    <p>Population ${data.population}</p><br>
+                                    <p>GDP: ${data.gdp}</p><br>
+                                    <p>Description: ${data.description}</p>
+                                    <a href="${data.id}"  onclick="editCity(this)">Edit</a> <a href="${data.id}" onclick="deleteCity(this)">Delete</a>`
+                    document.getElementById("cityList").innerHTML = content;
+                }
+            })
+            event.preventDefault();
+        }
+        successHandler();
+        function editCity(a){
+            let idCity= a.getAttribute("href")
+            let content = `<h2>Edit City</h2>
+<form id="editForm">
+    <table>
+        <input type="text" id="idEdit" hidden/>
+        <tr>
+            <td>Name :</td>
+            <td><input type="text" id="nameEdit" placeholder=" name change"></td>
+        </tr>
+        <tr>
+            <td>Population :</td>
+            <td><input type="text" id="populationEdit" placeholder=" population change"></td>
+        </tr>
+        <tr>
+            <td>Area :</td>
+            <td><input type="text" id="areaEdit" placeholder=" area change"></td>
+        </tr>
+        <tr>
+            <td>Gdp :</td>
+            <td><input type="text" id="gdpEdit" placeholder=" gdp change"></td>
+        </tr>
+         <tr>
+            <td>Description :</td>
+            <td><input type="text" id="descriptionEdit" placeholder=" description change"></td>
+        </tr>
+        <tr>
+            <td>Country:</td>
+            <td>
+                <select id="countryEdit">
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Update" onclick="updateCity()"></td>
+        </tr>
+    </table>
+</form>`
+            document.getElementById("cityList").innerHTML = content;
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/city/" + idCity,
+                success: function (city) {
+                    $('#idEdit').val(city.id);
+                    $('#nameEdit').val(city.name);
+                    $('#populationEdit').val(city.population);
+                    $('#areaEdit').val(city.are);
+                    $('#gdpEdit').val(city.gdp);
+                    $('#descriptionEdit').val(city.description);
+                    $('#countryEdit').val(city.country);
+                }
+            })
+            event.preventDefault();
+        }
+    </script>
+</head>
+<body>
+<div>
+<!--<h3>City List</h3> <input type="submit" value="Add">-->
+<!--    <table>-->
+<!--        <tr>-->
+<!--            <th>City</th>-->
+<!--            <th>Country</th>-->
+<!--        </tr>-->
+<!--        <tr>-->
+
+<!--        </tr>-->
+<!--    </table>-->
+</div>
+<div id="cityList">
+
+</div>
+</body>
+</html>
